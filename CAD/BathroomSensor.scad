@@ -97,16 +97,22 @@ module backWallCasing(depth){
              fullyRoundedShaped();
              difference(){
                  translate([resinThickness, 2 + resinThickness, resinThickness]){
-                    cube([7.5, resinThickness, depth - resinThickness]);
+                    cube([7.5, resinThickness, depth - (resinThickness * 2)]);
                     }
                  translate([resinThickness + 0.4, 2 + resinThickness, resinThickness]){
                     cube([0.3, resinThickness, railsForCircuitHeigth]);
                     }
                  }
+             difference(){
+                translate([7.5 + resinThickness, resinThickness, resinThickness]){
+                    cube([resinThickness, 2 + resinThickness, depth - (resinThickness * 2)]);
+                    }
+                translate([7.5 + resinThickness, 2 + resinThickness - 0.4, resinThickness]){
+                    cube([resinThickness, 0.4, railsForCircuitHeigth]);
+                    }
+                }
              
-             translate([7.5 + resinThickness, resinThickness, resinThickness]){
-                 cube([resinThickness, 2 + resinThickness, depth - resinThickness]);
-                 }
+             
              railsForProtectionCircuit();
              }
          }
@@ -115,6 +121,8 @@ module backWallCasing(depth){
              addBatteryHolder();
              lowerRailForBoard();
              upperRailForBoard();
+             lowerRailForScreen();
+             upperRailForScreen();
              }
          }
      module lowerRailForBoard(){
@@ -136,16 +144,36 @@ module backWallCasing(depth){
             lowerRailForBoard();
             }
         }
+    module lowerRailForScreen(){
+         union(){
+            translate([7.5 + (resinThickness * 2), resinThickness, resinThickness + railsForCircuitHeigth]){
+                cube([resinThickness, 2 + resinThickness, resinThickness]);
+                }
+            translate([7.5 + (resinThickness * 2), resinThickness, resinThickness + railsForCircuitHeigth]){
+                cube([10 - 7.5 - resinThickness, resinThickness, resinThickness]);
+                }
+            translate([10, resinThickness, resinThickness + railsForCircuitHeigth]){
+                cube([resinThickness, 2 + resinThickness, resinThickness]);
+                }
+            }            
+        }
+    module upperRailForScreen(){
+        boardThickness = 0.1;
+        translate([0, 0, railWidth + boardThickness]){
+            lowerRailForScreen();
+            }
+        }
     module addPivotPoint(){
+        pivotDiameter = 0.2;
         union(){
             addRailsForCircuitBoard();
             translate([0,0,resinThickness])difference(){
                 linear_extrude(0.2){
-                    translate([7.5 + resinThickness + 0.4, 7 + (resinThickness * 2) - 0.4])circle(0.3);
+                    translate([7.5 + (pivotDiameter * 2), 7 + (resinThickness * 2) - 0.4])circle(0.3);
                     }
                 linear_extrude(0.2 + differenceOffset){
                     offset(-0.1){
-                    translate([7.5 + resinThickness + 0.4, 7 + (resinThickness * 2) - 0.4])circle(0.3);
+                    translate([7.5 + (pivotDiameter * 2), 7 + (resinThickness * 2) - 0.4])circle(0.3);
                         }
                     }
                 }
