@@ -1,5 +1,4 @@
 #include <ESP8266WiFi.h>          //https://github.com/esp8266/Arduino
-
 //needed for library
 #include <DNSServer.h>
 #include <ESP8266WebServer.h>
@@ -8,8 +7,8 @@
 std::unique_ptr<ESP8266WebServer> server;
 
 //default custom static IP
-char server_static_ip[16] = "192.168.45.99";
-char server_static_gw[16] = "192.168.44.1";
+char server_static_ip[16] = "192.168.51.20";
+char server_static_gw[16] = "192.168.50.1";
 char server_static_sn[16] = "255.255.254.0";
 char server_static_dns[16] = "8.8.8.8";
 
@@ -56,7 +55,7 @@ void setup() {
   digitalWrite(LedPin, LOW);
   // put your setup code here, to run once:
   Serial.begin(115200);
-  //Serial.setDebugOutput(true);
+  Serial.setDebugOutput(true);
   //WiFiManager
   //Local intialization. Once its business is done, there is no need to keep it around
   WiFiManager wifiManager;
@@ -82,9 +81,9 @@ void setup() {
   mgnt_sn.fromString(mgnt_static_sn);
 
   wifiManager.setAPStaticIPConfig(mgnt_ip, mgnt_gw, mgnt_sn);
-  //wifiManager.setSTAStaticIPConfig(server_ip, server_gw,  server_sn, server_dns);
+  wifiManager.setSTAStaticIPConfig(server_ip, server_gw,  server_sn, server_dns);
   
-  if (!wifiManager.autoConnect("AutoConnectAP")) {
+  if (!wifiManager.autoConnect("Bathroom monitor pannel")) {
     Serial.println("failed to connect, we should reset as see if it connects");
     delay(3000);
     ESP.reset();

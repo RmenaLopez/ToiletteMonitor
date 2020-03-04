@@ -5,8 +5,9 @@
 #include <ESP8266WebServer.h>
 #include <WiFiManager.h>         //https://github.com/tzapu/WiFiManager
 
-const String thirdFloorPannelUrl = "http://192.168.45.99";
+const String thirdFloorPannelUrl = "http://192.168.41.99";
 int sensorInput = 5;
+int wifiSetupInput = 14;
 
 void createPOSTRequest(String url, String params);
 void bathroomOccupied(String url);
@@ -16,16 +17,24 @@ void bathroomUnoccupied(String url);
 
 void setup() {
     pinMode(sensorInput, INPUT);
-    // put your setup code here, to run once:
+    pinMode(wifiSetupInput, INPUT);
+    pinMode(LED_BUILTIN, OUTPUT);
+    // put your setup code here, to run once:z
     Serial.begin(115200);
 
     //WiFiManager
     //Local intialization. Once its business is done, there is no need to keep it around
     WiFiManager wifiManager;
-    //reset saved settings
-    //wifiManager.resetSettings();
-    
-    //set custom ip for portal
+
+    if (digitalRead(wifiSetupInput)){
+      Serial.println("Starting manual WiFi setup...");
+      digitalWrite(LED_BUILTIN, LOW);
+      wifiManager.resetSettings();
+      wifiManager.setAPStaticIPConfig(IPAddress(10,0,1,1), IPAddress(10,0,1,1), IPAddress(255,255,255,0));
+      wifiManager.setSaveConfigCallback(saveConfigCallback);
+      wifiManager.startConfigPortal("Bathroom stall third floor");
+    }
+    else{
     wifiManager.setAPStaticIPConfig(IPAddress(10,0,1,1), IPAddress(10,0,1,1), IPAddress(255,255,255,0));
 
     //fetches ssid and pass from eeprom and tries to connect
@@ -39,6 +48,7 @@ void setup() {
     
     //if you get here you have connected to the WiFi
     Serial.println("connected...yeey :)");
+    }
 }
 
 void loop() {
@@ -76,4 +86,18 @@ void bathroomOccupied(String url){
 
 void bathroomUnoccupied(String url){
     createPOSTRequest(url, "state=unoccupied");
+}
+
+void saveConfigCallback(){
+    while(true){
+        digitalWrite(LED_BUILTIN, LOW);
+        delay(125);
+        digitalWrite(LED_BUILTIN, HIGH);
+        delay(125);
+        digitalWrite(LED_BUILTIN, LOW);
+        delay(125);
+        digitalWrite(LED_BUILTIN, HIGH);
+        delay(125);
+        delay(500);
+    }  
 }
