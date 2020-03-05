@@ -165,25 +165,27 @@ module backWallCasing(depth){
         }
     module addPivotPoint(){
         pivotDiameter = 0.2;
+        height = 0.2;
         union(){
             addRailsForCircuitBoard();
             translate([0,0,resinThickness])difference(){
-                linear_extrude(0.2){
-                    translate([7.5 + (pivotDiameter * 2), 7 + (resinThickness * 2) - 0.4])circle(0.3);
+                linear_extrude(height){
+                    translate([7.5 + (resinThickness * 2), 7 + (resinThickness * 2) - 0.4])circle(pivotDiameter);
                     }
-                linear_extrude(0.2 + differenceOffset){
+                linear_extrude(height + differenceOffset){
                     offset(-0.1){
-                    translate([7.5 + (pivotDiameter * 2), 7 + (resinThickness * 2) - 0.4])circle(0.3);
+                    translate([7.5 + (resinThickness * 2), 7 + (resinThickness * 2) - 0.4])circle(pivotDiameter);
                         }
                     }
                 }
+                addSwitchMount();
             }
         }
     module railsForProtectionCircuit(){
          railWidth = 0.2;
          protectionBoardWidth = 1.8;
          protectionBoardHeigth = 0.4;
-         slothWidth = 0.1;
+         slotWidth = 0.1;
         difference(){
             union(){
                 translate([resinThickness + 7.5 - protectionBoardWidth - railWidth, 2 + (resinThickness * 2), resinThickness]){
@@ -194,14 +196,45 @@ module backWallCasing(depth){
                     }
                 }
             union(){
-                translate([resinThickness + 7.5 - protectionBoardWidth - railWidth + slothWidth, 2 + (resinThickness * 3), resinThickness]){
-                    cube([slothWidth, slothWidth, protectionBoardHeigth + railWidth]);
+                translate([resinThickness + 7.5 - protectionBoardWidth - railWidth + slotWidth, 2 + (resinThickness * 3), resinThickness]){
+                    cube([slotWidth, slotWidth, protectionBoardHeigth + railWidth]);
                     }
                 translate([resinThickness + 7.5, 2 + (resinThickness * 3), resinThickness]){
-                    cube([slothWidth, slothWidth, protectionBoardHeigth + railWidth]);
+                    cube([slotWidth, slotWidth, protectionBoardHeigth + railWidth]);
                     }
                 }
             }        
+        }
+    module addSwitchMount(){
+        module rotate_about_pt(z, y, pt) {
+            translate(pt)
+                rotate([0, y, z])
+                    translate(-pt)
+                        children();   
+            }
+        switchHolesDiamater = 0.2;
+        point1X = 0.3364;
+        point1Y = 1.4892;
+        point2X = 0.9824;
+        point2Y = 0.8432;
+        cylinderHeight = railsForCircuitHeigth + resinThickness - 0.05;
+        baseHeight = 0.3;
+        translate([7.5 + (resinThickness * 2) - point1X, 7 + (resinThickness * 2) - 0.4 - point1Y]){
+            cylinder(cylinderHeight,switchHolesDiamater/2, switchHolesDiamater/2);
+            }
+        rotate_about_pt(-24,0,[7.5 + (resinThickness * 2) - point1X, 7 + (resinThickness * 2) - 0.4 - point1Y])translate([7.5 + (resinThickness * 2) - point1X - 0.6, 7 + (resinThickness * 2) - 0.4 - point1Y]){
+            cylinder(cylinderHeight,switchHolesDiamater/2, switchHolesDiamater/2);
+            }
+            
+        hull(){
+            translate([7.5 + (resinThickness * 2) - point1X, 7 + (resinThickness * 2) - 0.4 - point1Y]){
+            cylinder(baseHeight,switchHolesDiamater, switchHolesDiamater);
+            }
+        rotate_about_pt(-24,0,[7.5 + (resinThickness * 2) - point1X, 7 + (resinThickness * 2) - 0.4 - point1Y])translate([7.5 + (resinThickness * 2) - point1X - 0.6, 7 + (resinThickness * 2) - 0.4 - point1Y]){
+            cylinder(baseHeight,switchHolesDiamater, switchHolesDiamater);
+            }
+            }
+         
         }
         addPivotPoint();
 }
