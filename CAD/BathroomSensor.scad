@@ -253,61 +253,120 @@ module fillet(r, h) {
 
 module frontWallCasing(){
     module notRoundedShape(){
-        union(){
-            translate([0,0,0.2])
-            difference(){
-                linear_extrude(frontWallCasingDepth){
-                    casingBase();
-                    }
-                translate([0,0,-differenceOffset])
-                linear_extrude(frontWallCasingDepth - resinThickness + differenceOffset){
-                    offset(- resinThickness){
+        difference(){
+            union(){
+                translate([0,0,0.2])
+                difference(){
+                    linear_extrude(frontWallCasingDepth){
                         casingBase();
+                        }
+                    translate([0,0,-differenceOffset])
+                    linear_extrude(frontWallCasingDepth - resinThickness + differenceOffset){
+                        offset(- resinThickness){
+                            casingBase();
+                            }
+                        }
+                    }
+                difference(){
+                    linear_extrude(frontWallCasingDepth + 0.2){
+                        offset(- resinThickness){
+                            casingBase();
+                            }
+                        }
+                    translate([0,0,-differenceOffset])
+                    linear_extrude(frontWallCasingDepth + 0.2 + differenceOffset){
+                        offset(- resinThickness - 0.2){
+                            casingBase();
+                            }
                         }
                     }
                 }
-            difference(){
-                linear_extrude(frontWallCasingDepth + 0.2){
-                    offset(- resinThickness){
-                        casingBase();
-                        }
-                    }
-                translate([0,0,-differenceOffset])
-                linear_extrude(frontWallCasingDepth + 0.2 + differenceOffset){
-                    offset(- resinThickness - 0.2){
-                        casingBase();
-                        }
-                    }
-                }
+            translate([7.5 + (resinThickness ), 7 + (resinThickness), 0])cube([2.3, 5, resinThickness]);
             }
         }
     module innerRoundedShape(){
         union(){
             notRoundedShape();
-            
             translate([resinThickness * 2, resinThickness * 2,0])
             fillet(resinThickness, frontWallCasingDepth + lockHeigth);
+            translate([resinThickness * 2, 7 + (resinThickness),0])rotate([0, 0, -90])
+            fillet(resinThickness, frontWallCasingDepth + lockHeigth);
             translate([10, resinThickness * 2,0])rotate([0, 0, 90])
-            fillet(resinThickness, frontWallCasingDepth + lockHeigth);
-            translate([10, 10 + resinThickness,0])rotate([0, 0, 180])
-            fillet(resinThickness, frontWallCasingDepth + lockHeigth);
-                    
+            fillet(resinThickness, frontWallCasingDepth + lockHeigth);     
             }
         }
-        innerRoundedShape();
-    
+    module fullyRoundedShape(){
+        difference(){
+            innerRoundedShape();
+            translate([resinThickness, resinThickness, - differenceOffset])
+            fillet(resinThickness, resinThickness + differenceOffset);
+            translate([resinThickness, 7 + (resinThickness * 2),- differenceOffset])rotate([0, 0, -90])
+            fillet(resinThickness, resinThickness + differenceOffset);
+            translate([10 + resinThickness, resinThickness,- differenceOffset])rotate([0, 0, 90])
+            fillet(resinThickness, resinThickness + differenceOffset);
+            }
+        }
+    module addPivotPoint(){
+        pivotDiameter = 0.2;
+        height = 0.2;
+            translate([0, 0 ,0.3])difference(){
+                linear_extrude(height){
+                    translate([7.5 + (resinThickness * 2), 7 + (resinThickness * 2) - 0.4])circle(pivotDiameter);
+                    }
+                linear_extrude(height + differenceOffset){
+                    offset(-0.1){
+                    translate([7.5 + (resinThickness * 2), 7 + (resinThickness * 2) - 0.4])circle(pivotDiameter);
+                    }
+                }
+            }
+        }
+    module completeWall(){
+        union(){
+            fullyRoundedShape();
+            addPivotPoint();
+            }
+        }
+        completeWall();
     }
+    module door(){
+        module ramp(){
+            difference(){
+                translate([0,0,resinThickness]){
+                    cylinder(casingDepth - (resinThickness * 4), 1, 1);
+                    }
+                translate([-4 - resinThickness/2, -2, 0])cube([4, 4, 4]);
+                translate([0, 2, 2])cube([4, 4, 4], true);
+                translate([-resinThickness/2, -1,- differenceOffset])rotate([0, 0, 0])
+                fillet(resinThickness, 5);
+                translate([1, 0,- differenceOffset])rotate([0, 0, 180])
+                fillet(resinThickness, 5);     
+                }
+            }
+        module pivot(){
+            cylinder(casingDepth - (resinThickness * 2), (resinThickness/2) - 0.01, (resinThickness/2) - 0.01);
+            }
+        module slab(){
+            translate([-resinThickness/2, 0, resinThickness]){
+                cube([resinThickness, 2.3, casingDepth - (resinThickness * 4)]);
+                }
+            }
+        union(){
+            ramp();
+            pivot();
+            slab();
+            }
+        }
+    
 //lock(7.5, 2.2, 3.8, 0.2);
 
 
-//color("white")translate([-resinThickness, doubleSidedTapeThickness, 10 + (resinThickness * 3) + 0.8 + doubleSidedTapeThickness])rotate([-90, 0, 0])
-    backWallCasing(backWallCasingDepth);
+//translate([-resinThickness, doubleSidedTapeThickness, 10 + (resinThickness * 3) + 0.8 + doubleSidedTapeThickness])rotate([-90, 0, 0])
+        backWallCasing(backWallCasingDepth);
 
-//color("white")translate([-resinThickness, doubleSidedTapeThickness + 10, 10 + (resinThickness * 3) + 0.8 + doubleSidedTapeThickness])rotate([-90, 0, 0])frontWallCasing();
-    
-    
-    
-    
+//translate([-resinThickness, doubleSidedTapeThickness + 5, 10 + (resinThickness * 3) + 0.8 + doubleSidedTapeThickness])rotate([-90, 0, 0])
+        translate([0,0,2.5])frontWallCasing();
+
+translate([7.5 + (resinThickness * 2), 7 + (resinThickness * 2) - 0.4, 0.2])door();   
     
     
     
