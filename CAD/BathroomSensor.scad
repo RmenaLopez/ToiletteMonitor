@@ -7,6 +7,7 @@ frontWallCasingDepth = casingDepth - backWallCasingDepth;
 lockHeigth = 0.2;
 railsForCircuitHeigth = 0.4;
 railWidth = 0.2;
+fittingOffset = 0.1; 
 
 doubleSidedTapeThickness = 0.1;
 module handle(width, depth, heigth, thickness){
@@ -48,11 +49,11 @@ module lock(width, depth, heigth, thickness){
 module casingBase(){ 
         polygon([
         [0,0],
-        [10 + (resinThickness * 2), 0],
-        [10 + (resinThickness * 2), 10.2 + (resinThickness * 2)],
-        [7.5 + (resinThickness), 10.2 + (resinThickness * 2)],
-        [7.5 + (resinThickness), 7 + (resinThickness * 3)],
-        [0, 7 + (resinThickness * 3)]
+        [10 + (resinThickness * 2) + fittingOffset, 0],
+        [10 + (resinThickness * 2) + fittingOffset, 10.2 + (resinThickness * 2) + fittingOffset],
+        [7.5 + (resinThickness) + fittingOffset, 10.2 + (resinThickness * 2) + fittingOffset],
+        [7.5 + (resinThickness) + fittingOffset, 7 + (resinThickness * 3) + fittingOffset],
+        [0, 7 + (resinThickness * 3) + fittingOffset]
         ]);
         }
 module backWallCasing(depth){
@@ -68,11 +69,11 @@ module backWallCasing(depth){
                         }   
                     }
                 }
-            translate([0, 7 + (resinThickness * 3), resinThickness]){
-                cube([10.2, 3 + resinThickness + differenceOffset, depth]);
+            translate([0, 7 + (resinThickness * 3) + fittingOffset, resinThickness]){
+                cube([10.2 + fittingOffset, 3 + resinThickness + differenceOffset, depth]);
                 }
-            translate([7.5 + (resinThickness), 7 + (resinThickness * 2), resinThickness]){
-                cube([resinThickness + differenceOffset, resinThickness + differenceOffset, depth]);
+            translate([7.5 + (resinThickness) - fittingOffset, 7 + (resinThickness * 2) + fittingOffset, resinThickness]){
+                cube([resinThickness*2 + fittingOffset, resinThickness + differenceOffset, depth]);
                 }
             }
         }
@@ -80,34 +81,34 @@ module backWallCasing(depth){
         union(){
         notRoundedShape();
         translate([resinThickness, resinThickness, 0])fillet(resinThickness, depth);
-        translate([10.2, resinThickness, 0])rotate([0, 0, 90])fillet(resinThickness, depth);
-        translate([resinThickness, 7 + (resinThickness * 2), 0])rotate([0, 0, 270])fillet(resinThickness, depth);
+        translate([10.2 + fittingOffset, resinThickness, 0])rotate([0, 0, 90])fillet(resinThickness, depth);
+        translate([resinThickness, 7 + (resinThickness * 2) + fittingOffset, 0])rotate([0, 0, 270])fillet(resinThickness, depth);
             }
         }
      module fullyRoundedShaped (){
         difference(){
         innerRoundedShape();
         translate([0, 0, - differenceOffset/2])fillet(resinThickness, depth + differenceOffset);
-        translate([10.4, 0, - differenceOffset/2])rotate([0, 0, 90])fillet(resinThickness, depth + differenceOffset);
-        translate([0, 7 + (resinThickness * 3), - differenceOffset/2])rotate([0, 0, 270])fillet(resinThickness, depth + differenceOffset);
+        translate([10.4 + fittingOffset, 0, - differenceOffset/2])rotate([0, 0, 90])fillet(resinThickness, depth + differenceOffset);
+        translate([0, 7 + (resinThickness * 3) + fittingOffset, - differenceOffset/2])rotate([0, 0, 270])fillet(resinThickness, depth + differenceOffset);
             }
         }
      module addBatteryHolder (){
          union(){
              fullyRoundedShaped();
              difference(){
-                 translate([resinThickness, 2 + resinThickness, resinThickness]){
-                    cube([7.5, resinThickness, depth - (resinThickness * 2)]);
+                 translate([resinThickness, 2 + resinThickness + fittingOffset, resinThickness]){
+                    cube([7.5 + fittingOffset, resinThickness, depth - (resinThickness * 2)]);
                     }
-                 translate([resinThickness + 0.4, 2 + resinThickness, resinThickness]){
+                 translate([resinThickness + 0.4, 2 + resinThickness + fittingOffset, resinThickness]){
                     cube([0.3, resinThickness, railsForCircuitHeigth]);
                     }
                  }
              difference(){
-                translate([7.5 + resinThickness, resinThickness, resinThickness]){
-                    cube([resinThickness, 2 + resinThickness, depth - (resinThickness * 2)]);
+                translate([7.5 + resinThickness + fittingOffset, resinThickness, resinThickness]){
+                    cube([resinThickness, 2 + resinThickness + fittingOffset, depth - (resinThickness * 2)]);
                     }
-                translate([7.5 + resinThickness, 2 + resinThickness - 0.4, resinThickness]){
+                translate([7.5 + resinThickness + fittingOffset, 2 + resinThickness - 0.4 + fittingOffset, resinThickness]){
                     cube([resinThickness, 0.4, railsForCircuitHeigth]);
                     }
                 }
@@ -119,10 +120,10 @@ module backWallCasing(depth){
      module addRailsForCircuitBoard(){
          union(){
              addBatteryHolder();
-             lowerRailForBoard();
-             upperRailForBoard();
-             lowerRailForScreen();
-             upperRailForScreen();
+             translate([fittingOffset,fittingOffset,0])lowerRailForBoard();
+             translate([fittingOffset,fittingOffset,0])upperRailForBoard();
+             translate([fittingOffset,fittingOffset,0])lowerRailForScreen();
+             translate([fittingOffset,fittingOffset,0])upperRailForScreen();
              }
          }
      module lowerRailForBoard(){
@@ -139,7 +140,7 @@ module backWallCasing(depth){
             }            
         }
     module upperRailForBoard(){
-        boardThickness = 0.09;
+        boardThickness = 0.12;
         translate([0, 0, railWidth + boardThickness]){
             lowerRailForBoard();
             }
@@ -158,7 +159,7 @@ module backWallCasing(depth){
             }            
         }
     module upperRailForScreen(){
-        boardThickness = 0.1;
+        boardThickness = 0.15;
         translate([0, 0, railWidth + boardThickness]){
             lowerRailForScreen();
             }
@@ -178,28 +179,28 @@ module backWallCasing(depth){
                         }
                     }
                 }
-                addSwitchMount();
+                translate([fittingOffset, fittingOffset,0])addSwitchMount();
             }
         }
     module railsForProtectionCircuit(){
          railWidth = 0.2;
-         protectionBoardWidth = 1.8;
+         protectionBoardWidth = 2.9;
          protectionBoardHeigth = 0.4;
          slotWidth = 0.1;
         difference(){
             union(){
-                translate([resinThickness + 7.5 - protectionBoardWidth - railWidth, 2 + (resinThickness * 2), resinThickness]){
+                translate([resinThickness + 7.5 - protectionBoardWidth - railWidth + fittingOffset, 2 + (resinThickness * 2) + fittingOffset, resinThickness]){
                     cube([railWidth, railWidth * 2, protectionBoardHeigth]);
                     }
-                translate([resinThickness + 7.5, 2 + (resinThickness * 2), resinThickness]){
+                translate([resinThickness + 7.5 + fittingOffset, 2 + (resinThickness * 2) + fittingOffset, resinThickness]){
                     cube([railWidth, railWidth * 2, protectionBoardHeigth]);
                     }
                 }
             union(){
-                translate([resinThickness + 7.5 - protectionBoardWidth - railWidth + slotWidth, 2 + (resinThickness * 3), resinThickness]){
+                translate([resinThickness + 7.5 - protectionBoardWidth - railWidth + slotWidth + fittingOffset, 2 + (resinThickness * 3) + fittingOffset, resinThickness]){
                     cube([slotWidth, slotWidth, protectionBoardHeigth + railWidth]);
                     }
-                translate([resinThickness + 7.5, 2 + (resinThickness * 3), resinThickness]){
+                translate([resinThickness + 7.5 + fittingOffset, 2 + (resinThickness * 3) + fittingOffset, resinThickness]){
                     cube([slotWidth, slotWidth, protectionBoardHeigth + railWidth]);
                     }
                 }
@@ -236,7 +237,7 @@ module backWallCasing(depth){
             }
          
         }
-        addPivotPoint();
+        translate([fittingOffset, fittingOffset,0])addPivotPoint();
 }
  
 module fillet(r, h) {
@@ -357,16 +358,15 @@ module frontWallCasing(){
             }
         }
     
-//lock(7.5, 2.2, 3.8, 0.2);
+lock(7.5, 2.2, 3.8, 0.2);
 
 
-//translate([-resinThickness, doubleSidedTapeThickness, 10 + (resinThickness * 3) + 0.8 + doubleSidedTapeThickness])rotate([-90, 0, 0])
-        backWallCasing(backWallCasingDepth);
+translate([-resinThickness, doubleSidedTapeThickness, 10 + (resinThickness * 3) + 0.8 + doubleSidedTapeThickness])rotate([-90, 0, 0])backWallCasing(backWallCasingDepth);
 
 //translate([-resinThickness, doubleSidedTapeThickness + 5, 10 + (resinThickness * 3) + 0.8 + doubleSidedTapeThickness])rotate([-90, 0, 0])
-        translate([0,0,2.5])frontWallCasing();
+        //translate([0,0,2.5])frontWallCasing();
 
-translate([7.5 + (resinThickness * 2), 7 + (resinThickness * 2) - 0.4, 0.2])door();   
+translate([7.5 + (resinThickness * 2) + fittingOffset, 7 + (resinThickness * 2) - 0.4 + fittingOffset, 0.2])door();   
     
     
     
